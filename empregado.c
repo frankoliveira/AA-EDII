@@ -1,5 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "empregado.h"
-#include<string.h>
 
 Empregado* criarEmpregado(char* n, int idade, double sal, int n_dep){
     int static cod = 0;
@@ -15,7 +17,7 @@ Empregado* criarEmpregado(char* n, int idade, double sal, int n_dep){
     return e;
 }
 
-void salva(Empregado *e, FILE *out){
+void salva_empreg(Empregado *e, FILE *out){
     if(out != NULL){
         fwrite(&e->cod, sizeof(int), 1, out);
         fwrite(e->nome, sizeof(char), sizeof(e->nome), out);
@@ -30,7 +32,7 @@ void salva(Empregado *e, FILE *out){
     free(e);
 }
 
-Empregado* le(FILE *in){
+Empregado* le_empreg(FILE *in){
     Empregado *e = (Empregado*) malloc(sizeof(Empregado));
     if (0 >= fread(&e->cod, sizeof(int), 1, in))
     {
@@ -46,19 +48,8 @@ Empregado* le(FILE *in){
     return e;
 }
 
-void le_tudo(FILE *in){
-    rewind(in);	//voltando para o início do arq
-    Empregado *e = malloc(sizeof(Empregado));
-    //printf("bytes lidos = %ld", fread(&c->cod, sizeof(int), 1, in));    //seg fault no fread !!!
-    while(fread(&e->cod, sizeof(int), 1, in) > 0){
-        fread(e->nome, sizeof(char), sizeof(e->nome), in);
-        fread(&e->idade, sizeof(int), sizeof(e->idade), in);
-        fread(&e->salario, sizeof(double), sizeof(e->salario), in);
-        fread(&e->n_dependentes, sizeof(int), sizeof(e->n_dependentes), in);
-        fread(&e->prox, sizeof(int), sizeof(e->prox), in);
-        fread(&e->status, sizeof(int), sizeof(e->status), in);
-        printf("\n\nEmpregado:\nCod: %d\nNome: %s\nIdade:%d\nSalario:%f\nNº dependentes:%d\nProx:%d\nStatus:%d\n", (e->cod), e->nome, e->idade, e->salario, e->n_dependentes, e->prox, e->status);
-    }
+void imprime_empreg(Empregado *e){
+    printf("\n\nEmpregado:\nCod: %d\nNome: %s\nIdade:%d\nSalario:%f\nNº dependentes:%d\nProx:%d\nStatus:%d\n", (e->cod), e->nome, e->idade, e->salario, e->n_dependentes, e->prox, e->status);
 }
 
 int tamanhoEmpregado(){
