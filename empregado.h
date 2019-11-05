@@ -12,15 +12,8 @@ typedef struct empregado{
     int status;
 }Empregado;
 
-typedef struct dependente{
-    int cod;
-    char* nome;
-    int idade;
-    int cod_emp;
-}Dependente;
-
 Empregado* criarEmpregado(char* n, int idade, double sal, int n_dep);
-void salva(Empregado *e, FILE *out);
-Empregado* le(FILE *in);
-void le_tudo(FILE *in);
+void salva_empreg(Empregado *e, FILE *out);
+Empregado* le_empreg(FILE *in);
+void imprime_empreg(Empregado *e);
 int tamanhoEmpregado();
