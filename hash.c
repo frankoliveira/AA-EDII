@@ -35,7 +35,7 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 			fseek(r, 0, SEEK_END);
 			salva_empreg(emp, r);
 			fwrite(&*qtd_registros, sizeof(int), 1, h);
-			qtd_registros++;
+			*qtd_registros++;
 		}
 	}
 	else{
@@ -54,7 +54,7 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 			fseek(r, 0, SEEK_END);
 			salva_empreg(emp, r);
 			emp_aux->prox = *qtd_registros;
-			qtd_registros++;
+			*qtd_registros++;
 		}
 	}
 }
