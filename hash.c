@@ -15,14 +15,22 @@ int hash(int n, int tam, int l){
     return (n%(tam*(int)pow(2,l)));
 }
 
+void imprimeHash(FILE *hash){
+	int aux;
+	rewind(hash);
+	while(fread(&aux, sizeof(int), 1, hash) != 0){
+		printf("%d\n", aux);
+	}
+}
+
 void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int l, int *qtd_registros){
 	int chave = hash(emp->cod, tam, l);
 	int excl, aux;
-	Empregado *emp_aux;
+	rewind(exclusao);
 	while(fread(&excl, sizeof(int), 1, exclusao) != 0){ //Procurar caso tenha algum registro excluido
 		if(excl != -1) break;
 	}
-	fseek(h, chave*tamanhoEmpregado(), SEEK_SET);
+	fseek(h, chave*sizeof(int), SEEK_SET);
 	fread(&aux, sizeof(int), 1, h);
 	if(aux == -1){ //Caso a chave da hash esteja vazia
 		fseek(h, chave*tamanhoEmpregado(), SEEK_SET);
@@ -34,11 +42,13 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 		else{
 			fseek(r, 0, SEEK_END);
 			salva_empreg(emp, r);
-			fwrite(&*qtd_registros, sizeof(int), 1, h);
-			*qtd_registros++;
+			fseek(h, chave*sizeof(int), SEEK_SET);
+			fwrite(&(*qtd_registros), sizeof(int), 1, h);
+			*qtd_registros += 1;
 		}
 	}
 	else{
+		Empregado *emp_aux;
 		fseek(r, aux*tamanhoEmpregado(), SEEK_SET);
 		emp_aux = le_empreg(r);
 		while(emp_aux->prox != -1){ //Vai até o final da lista encadeada
@@ -49,17 +59,21 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 			fseek(r, excl*tamanhoEmpregado(), SEEK_SET);
 			salva_empreg(emp, r);
 			emp_aux->prox = excl;
+			fseek(r, aux*tamanhoEmpregado(), SEEK_SET);
+			salva_empreg(emp_aux, r);
 		}
 		else{
 			fseek(r, 0, SEEK_END);
 			salva_empreg(emp, r);
 			emp_aux->prox = *qtd_registros;
-			*qtd_registros++;
+			fseek(r, aux*tamanhoEmpregado(), SEEK_SET);
+			salva_empreg(emp_aux, r);
+			*qtd_registros += 1;
 		}
 	}
 }
 
-void expandHash(FILE *h, FILE *r, int p, int tam, int l){
+void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 	int j = -1;
 	int aux;
 	fseek(h, 0, SEEK_END);
