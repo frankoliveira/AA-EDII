@@ -49,7 +49,7 @@ void imprime_depend(Dependente *e){
 
 int tamanhoDependente(){
 	return sizeof(int)         //cod
-         + sizeof * 50(char)   //nome
+         + 50*(sizeof(char))   //nome
          + sizeof(int)         //idade
          + sizeof(int)         //status
          + sizeof(int);        //cod_emp
