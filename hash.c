@@ -34,7 +34,7 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 		else{
 			fseek(r, 0, SEEK_END);
 			salva_empreg(emp, r);
-			fwrite(&qtd_registros, sizeof(int), 1, h);
+			fwrite(&*qtd_registros, sizeof(int), 1, h);
 			qtd_registros++;
 		}
 	}
