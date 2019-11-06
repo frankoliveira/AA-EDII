@@ -4,8 +4,9 @@
 #include "dependente.h"
 
 Dependente* criarDependente(char* n, int idade, int cod_emp){
-	int static cod = 0;
-    Dependente* e = malloc(tamanhoDependente());
+	int static cod = 1;
+    Dependente* e = (Dependente *) malloc(sizeof(Dependente));
+    if (e) memset(e, 0, sizeof(Dependente));
     e->cod = cod;
     cod++;
     strcpy(e->nome, n);
@@ -19,9 +20,9 @@ void salva_depend(Dependente *e, FILE *out){
 	if(out != NULL){
         fwrite(&e->cod, sizeof(int), 1, out);
         fwrite(e->nome, sizeof(char), sizeof(e->nome), out);
-        fwrite(&e->idade, sizeof(int), sizeof(e->idade), out);
-        fwrite(&e->cod_emp, sizeof(int), sizeof(e->cod_emp), out);
-        fwrite(&e->status, sizeof(int), sizeof(e->status), out);
+        fwrite(&e->idade, sizeof(int), 1, out);
+        fwrite(&e->cod_emp, sizeof(int), 1, out);
+        fwrite(&e->status, sizeof(int), 1, out);
     }
     else    printf("File passado é null");
     
@@ -36,9 +37,9 @@ Dependente* le_depend(FILE *in){
         return NULL;
     }
     fread(e->nome, sizeof(char), sizeof(e->nome), in);
-    fread(&e->idade, sizeof(int), sizeof(e->idade), in);
-    fread(&e->status, sizeof(int), sizeof(e->status), in);
-    fread(&e->cod_emp, sizeof(int), sizeof(e->cod_emp), in);
+    fread(&e->idade, sizeof(int), 1, in);
+    fread(&e->status, sizeof(int), 1, in);
+    fread(&e->cod_emp, sizeof(int), 1, in);
     return e;
 }
 
@@ -47,5 +48,9 @@ void imprime_depend(Dependente *e){
 }
 
 int tamanhoDependente(){
-	return (sizeof(int) + 50*sizeof(char) + sizeof(int) + sizeof(int));
+	return sizeof(int)         //cod
+         + sizeof * 50(char)   //nome
+         + sizeof(int)         //idade
+         + sizeof(int)         //status
+         + sizeof(int);        //cod_emp
 }
