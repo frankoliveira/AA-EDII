@@ -53,13 +53,13 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 		else{
 			fseek(r, 0, SEEK_END);
 			salva_empreg(emp, r);
-			emp_aux->prox = qtd_registros;
+			emp_aux->prox = *qtd_registros;
 			qtd_registros++;
 		}
 	}
 }
 
-int expandHash(FILE *h, FILE *r, int p, int tam, int l){
+void expandHash(FILE *h, FILE *r, int p, int tam, int l){
 	int j = -1;
 	int aux;
 	fseek(h, 0, SEEK_END);
@@ -67,58 +67,53 @@ int expandHash(FILE *h, FILE *r, int p, int tam, int l){
 	//Organizar hash
 	fseek(h, p*sizeof(int), SEEK_SET);
 	fread(&aux, sizeof(int), 1, h);
-	if(aux == -1) //Se na posição p da hash estiver vazio não precisa reorganizar
-		return 1;
-	else{
+	if(aux != -1){ //Se na posição p da hash não estiver vazio
 		Empregado *emp;
-		int nova_chave, run = 1;
-		int chave_atual = -1;
-		int chave_ant_foi = -1;
-		int chave_ant_ficou = -1;
+		int nova_chave;
+		int end_atual = -1;
+		int end_foi = -1;
+		int end_ficou = -1;
 		fseek(r, aux*tamanhoEmpregado(), SEEK_SET);
 		emp = le_empreg(r);
-		while(run == 1){
+		do{
 			nova_chave = hash(emp->cod, tam, l+1);
 			if(nova_chave != p){ //Se a nova chave for diferente da posição p da hash significa q ela precisa ser deslocado pra a expansão
 				fseek(h, nova_chave*sizeof(int), SEEK_SET);
 				fread(&aux, sizeof(int), 1, h);
 				if(aux == -1){ //Caso a noa partição extendida da hash esteja vazia
 					fseek(h, nova_chave*sizeof(int), SEEK_SET);
-					fwrite(&emp-cod, sizeof(int), 1, h);
-					chave_ant_foi = nova_chave;
+					fwrite(&emp->cod, sizeof(int), 1, h);
+					end_foi = nova_chave;
 				}
 				else{
-					fseek(r, chave_ant_foi*tamanhoEmpregado(), SEEK_SET);
+					fseek(r, end_foi*tamanhoEmpregado(), SEEK_SET);
 					emp = le_empreg(r);
-					emp->prox = chave_atual;
-					fseek(r, chave_ant_foi*tamanhoEmpregado(), SEEK_SET);
+					emp->prox = end_atual;
+					fseek(r, end_foi*tamanhoEmpregado(), SEEK_SET);
 					salva_empreg(emp, r);
-					chave_ant_foi = nova_chave;
+					end_foi = nova_chave;
 				}
 			}
 			else{
-				if(chave_ant_ficou == -1){ //Caso seja a primeira chave a continuar em p
+				if(end_ficou == -1){ //Caso seja a primeira chave a continuar em p
 					fseek(h, nova_chave*sizeof(int), SEEK_SET);
-					fwrite(&emp-cod, sizeof(int), 1, h);
-					chave_ant_ficou = nova_chave;
+					fwrite(&emp->cod, sizeof(int), 1, h);
+					end_ficou = nova_chave;
 				}
 				else{
-					fseek(r, chave_ant_ficou*tamanhoEmpregado(), SEEK_SET);
+					fseek(r, end_ficou*tamanhoEmpregado(), SEEK_SET);
 					emp = le_empreg(r);
-					emp->prox = chave_atual;
-					fseek(r, chave_ant_ficou*tamanhoEmpregado(), SEEK_SET);
+					emp->prox = end_atual;
+					fseek(r, end_ficou*tamanhoEmpregado(), SEEK_SET);
 					salva_empreg(emp, r);
-					chave_ant_ficou = nova_chave;
+					end_ficou = nova_chave;
 				}
 			}
 			if(emp->prox != -1){ //Continua até o final da lista de p
-				chave_atual = emp->prox;
+				end_atual = emp->prox;
 				fseek(r, emp->prox*tamanhoEmpregado(), SEEK_SET);
 				emp = le_empreg(r);
 			}
-			else{
-				run = 0;
-			}
-		}
+		}while(emp->prox != -1);
 	}
 }
