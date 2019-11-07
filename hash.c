@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "dependente.c"
-#include "empregado.c"
+//#include "empregado.c"
 
 void initHash(FILE *h, int tam){
 	int j = -1;
@@ -12,7 +12,7 @@ void initHash(FILE *h, int tam){
 }
 
 int hash(int n, int tam, int l){
-    return (n%(tam*(int)pow(2,l)));
+    return (n%(tam*((int)pow(2,l))));
 }
 
 void imprimeHash(FILE *hash){

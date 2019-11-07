@@ -1,7 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "empregado.h"
+//#include "empregado.h"
+
+typedef struct empregado{
+    int cod;
+    char nome[50];
+    int idade;
+    double salario;
+    int n_dependentes;
+    // Atributos para a hash extensível com encadeamento exterior
+    int prox;
+    int status;
+}Empregado;
 
 Empregado* criarEmpregado(char* n, int idade, double sal){
     int static cod = 1;
@@ -50,7 +61,7 @@ Empregado* le_empreg(FILE *in){
 }
 
 void imprime_empreg(Empregado *e){
-    printf("\n\nEmpregado:\nCod: %d\nNome: %s\nIdade:%d\nSalario:%f\nNº dependentes:%d\nProx:%d\nStatus:%d\n", e->cod, e->nome, e->idade, e->salario, e->n_dependentes, e->prox, e->status);
+    printf("\n\n\tEmpregado:\nCod: %d\nNome: %s\nIdade:%d\nSalario:%f\nNº dependentes:%d\nProx:%d\nStatus:%d\n", e->cod, e->nome, e->idade, e->salario, e->n_dependentes, e->prox, e->status);
 }
 
 int tamanhoEmpregado(){

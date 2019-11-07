@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "dependente.h"
-#include "empregado.h"
+//#include "empregado.h"
 
 void initHash(FILE *h, int tam);
 int hash(int n, int tam, int l);

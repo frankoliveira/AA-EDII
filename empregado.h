@@ -12,7 +12,7 @@ typedef struct empregado{
     int status;
 }Empregado;
 
-Empregado* criarEmpregado(char* n, int idade, double sal, int n_dep);
+//Empregado* criarEmpregado(char* n, int idade, double sal, int n_dep);
 void salva_empreg(Empregado *e, FILE *out);
 Empregado* le_empreg(FILE *in);
 void imprime_empreg(Empregado *e);
