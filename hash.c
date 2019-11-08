@@ -11,6 +11,13 @@ void initHash(FILE *h, int tam){
 	}
 }
 
+void initExc(FILE *e, int tam){
+	int j = -1;
+	for (int i = 0; i < tam; ++i){
+		fwrite(&j, sizeof(int), 1, e);
+	}
+}
+
 int hash(int n, int tam, int l){
     return (n%(tam*((int)pow(2,l))));
 }
@@ -23,21 +30,26 @@ void imprimeHash(FILE *hash){
 	}
 }
 
+// Estamos salvando na hash em chave + 1 e não chave
 void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int l, int *qtd_registros){
 	int chave = hash(emp->cod, tam, l);
-	int excl, aux;
+	int excl, aux, i=0, ini = -1;
 	rewind(exclusao);
 	while(fread(&excl, sizeof(int), 1, exclusao) != 0){ //Procurar caso tenha algum registro excluido
-		if(excl != -1) break;
+		if(excl != -1) break;    //Tem registro excluido
+        i++;
 	}
 	fseek(h, chave*sizeof(int), SEEK_SET);
 	fread(&aux, sizeof(int), 1, h);
 	if(aux == -1){ //Caso a chave da hash esteja vazia
-		fseek(h, chave*tamanhoEmpregado(), SEEK_SET);
+		//fseek(h, chave*tamanhoEmpregado(), SEEK_SET);
 		if(excl != -1){ //Caso tenha um registro excluido
 			fseek(r, excl*tamanhoEmpregado(), SEEK_SET);
 			salva_empreg(emp, r);
 			fwrite(&excl, sizeof(int), 1, h);
+            fseek(exclusao, i*sizeof(int), SEEK_SET);    //indo até onde estava nosso end do excluido
+            fwrite(&ini, sizeof(int), 1, exclusao);
+            // PAREI AQUI    -----
 		}
 		else{
 			fseek(r, 0, SEEK_END);
