@@ -13,6 +13,7 @@ Dependente* criarDependente(char* n, int idade, int cod_emp){
     e->idade = idade;
     e->cod_emp = cod_emp;
     e->status = 1;
+    e->prox =  -1;
     return e;
 }
 
@@ -23,6 +24,7 @@ void salva_depend(Dependente *e, FILE *out){
         fwrite(&e->idade, sizeof(int), 1, out);
         fwrite(&e->cod_emp, sizeof(int), 1, out);
         fwrite(&e->status, sizeof(int), 1, out);
+        fwrite(&e->prox, sizeof(int), 1, out);
     }
     else    printf("File passado é null");
     
@@ -38,8 +40,9 @@ Dependente* le_depend(FILE *in){
     }
     fread(e->nome, sizeof(char), sizeof(e->nome), in);
     fread(&e->idade, sizeof(int), 1, in);
-    fread(&e->status, sizeof(int), 1, in);
     fread(&e->cod_emp, sizeof(int), 1, in);
+    fread(&e->status, sizeof(int), 1, in);
+    fread(&e->prox, sizeof(int), 1, in);
     return e;
 }
 
@@ -49,8 +52,9 @@ void imprime_depend(Dependente *e){
 
 int tamanhoDependente(){
 	return sizeof(int)         //cod
-         + 50*(sizeof(char))   //nome
+         + sizeof(char) * 50   //nome
          + sizeof(int)         //idade
          + sizeof(int)         //status
-         + sizeof(int);        //cod_emp
+         + sizeof(int)         //cod_emp
+         + sizeof(int);        //prox
 }
