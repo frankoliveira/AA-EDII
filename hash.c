@@ -26,6 +26,22 @@ void imprimeHash(FILE *hash){
 	}
 }
 
+void percorrendo_lista(FILE* h, FILE* reg, int r_hash){
+    Empregado* e = (Empregado*) malloc(tamanhoEmpregado());
+    int aux = -1;
+    fseek(h, r_hash*sizeof(int), SEEK_SET);
+    fread(&aux, sizeof(int), 1, h);
+    
+    fseek(reg, aux*tamanhoEmpregado(), SEEK_SET);
+    e = le_empreg(reg);
+    if(e->status != -1)   imprime_empreg(e);
+    while(e->prox != -1){ //Vai até o final da lista encadeada
+        fseek(reg, e->prox*tamanhoEmpregado(), SEEK_SET);
+        e = le_empreg(reg);
+        if(e->status != -1)    imprime_empreg(e);
+    }  
+}
+
 void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int p, int l, int *qtd_registros){
 	int chave = hash(emp->cod, tam, l);
 	int excl, aux;
@@ -156,13 +172,14 @@ void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 	}
 }
 
-int busca_por_cod(FILE *h, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
+/*int busca_por_cod(FILE *hash, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
 	int end_atual;
 	int chave = hash(cod, tam, l);
 	Empregado* emp;
+    FILE* r = fopen("r.dat", "w+b");
 
-	fseek(h, chave*sizeof(int), SEEK_SET);
-	fread(&end_atual, sizeof(int), 1, h);
+	fseek(hash, chave*sizeof(int), SEEK_SET);
+	fread(&end_atual, sizeof(int), 1, hash);
 	fseek(regts, end_atual*tamanhoEmpregado(), SEEK_SET);
 	emp = le_empreg(regts);
 	if(emp->cod == cod)
@@ -171,14 +188,14 @@ int busca_por_cod(FILE *h, FILE* regts, int cod, int tam, int l){ //retorna o en
 		while(emp->prox != -1){
 			fseek(regts, emp->prox*tamanhoEmpregado(), SEEK_SET);
 			end_atual = emp->prox;
-			emp = le_empreg(regts);
+			emp = le_empreg(r);
 			if(emp->cod == cod)
 				return end_atual;
 		}
 	}
 
 	return -1;
-}
+}*/
 
 int main(){
 	int tamHash = 2, l = 0, qtd_registros = 0, p = 0, aux = -1;
@@ -207,15 +224,8 @@ int main(){
     printf(" Nova Hash: \n");
 	imprimeHash(hash);
 
-	//expandHash(hash, regts, tamHash, p, l);
+	percorrendo_lista(hash, regts, 1);
 
-	rewind(regts);
-	/*for (int i = 0; i < 4; ++i){
-		Empregado *aux;
-		aux = le_empreg(regts);
-		imprime_empreg(aux);
-	}*/
-	//imprimeHash(hash);
 
 	return 0;
 }
