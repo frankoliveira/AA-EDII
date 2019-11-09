@@ -156,14 +156,13 @@ void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 	}
 }
 
-/*int busca_por_cod(FILE *hash, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
+int busca_por_cod(FILE *h, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
 	int end_atual;
 	int chave = hash(cod, tam, l);
 	Empregado* emp;
-    FILE* r = fopen("r.dat", "w+b");
 
-	fseek(hash, chave*sizeof(int), SEEK_SET);
-	fread(&end_atual, sizeof(int), 1, hash);
+	fseek(h, chave*sizeof(int), SEEK_SET);
+	fread(&end_atual, sizeof(int), 1, h);
 	fseek(regts, end_atual*tamanhoEmpregado(), SEEK_SET);
 	emp = le_empreg(regts);
 	if(emp->cod == cod)
@@ -179,7 +178,7 @@ void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 	}
 
 	return -1;
-}*/
+}
 
 int main(){
 	int tamHash = 2, l = 0, qtd_registros = 0, p = 0, aux = -1;
