@@ -133,12 +133,6 @@ void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 					end_ficou = end_atual;
 				}
 			}
-			imprimeHash(h);
-			printf("nova_chave: %d\n", nova_chave);
-			printf("end_atual: %d\n", end_atual);
-			printf("end_foi: %d\n", end_foi);
-			printf("end_ficou: %d\n", end_ficou);
-			printf("--------\n");
 			nova_chave = end_atual;
 			end_atual = emp->prox;
 			if(end_atual != -1){ //Continua até o final da lista de p
