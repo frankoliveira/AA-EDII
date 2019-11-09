@@ -1,18 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "empregado.h"
-
-typedef struct empregado{
-    int cod;
-    char nome[50];
-    int idade;
-    double salario;
-    int n_dependentes;
-    // Atributos para a hash extensível com encadeamento exterior
-    int prox;
-    int status;
-}Empregado;
+#include "empregado.h"
 
 Empregado* criarEmpregado(char* n, int idade, double sal){
     int static cod = 1;
@@ -25,6 +14,7 @@ Empregado* criarEmpregado(char* n, int idade, double sal){
     e->salario = sal;
     e->n_dependentes = 0;
     e->prox = -1;
+    e->dependentes = -1;
     e->status = 1;
     return e;
 }
@@ -37,6 +27,7 @@ void salva_empreg(Empregado *e, FILE *out){
         fwrite(&e->salario, sizeof(double), 1, out);
         fwrite(&e->n_dependentes, sizeof(int), 1, out);
         fwrite(&e->prox, sizeof(int), 1, out);
+        fwrite(&e->dependentes, sizeof(int), 1, out);
         fwrite(&e->status, sizeof(int), 1, out);
     }
     else    printf("File passado é null");
@@ -56,12 +47,13 @@ Empregado* le_empreg(FILE *in){
     fread(&e->salario, sizeof(double), 1, in);
     fread(&e->n_dependentes, sizeof(int), 1, in);
     fread(&e->prox, sizeof(int), 1, in);
+    fread(&e->dependentes, sizeof(int), 1, in);
     fread(&e->status, sizeof(int), 1, in);
     return e;
 }
 
 void imprime_empreg(Empregado *e){
-    printf("\n\n\tEmpregado:\nCod: %d\nNome: %s\nIdade:%d\nSalario:%f\nNº dependentes:%d\nProx:%d\nStatus:%d\n", e->cod, e->nome, e->idade, e->salario, e->n_dependentes, e->prox, e->status);
+    printf("\n\nEmpregado:\nCod: %d\nNome: %s\nIdade:%d\nSalario:%f\nNº dependentes:%d\nProx:%d\nStatus:%d\n", e->cod, e->nome, e->idade, e->salario, e->n_dependentes, e->prox, e->status);
 }
 
 int tamanhoEmpregado(){
@@ -71,5 +63,6 @@ int tamanhoEmpregado(){
         + sizeof(double)    //salario
         + sizeof(int)       //n_dependentes
         + sizeof(int)       //status
+        + sizeof(int)       //dependentes
         + sizeof(int);      //prox
 }
