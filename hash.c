@@ -3,6 +3,9 @@
 #include <math.h>
 #include "dependente.c"
 #include "empregado.c"
+#define fbMax 1,1
+
+void expandHash(FILE *h, FILE *r, int tam, int p, int l);
 
 void initHash(FILE *h, int tam){
 	int j = -1;
@@ -23,7 +26,7 @@ void imprimeHash(FILE *hash){
 	}
 }
 
-void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int l, int *qtd_registros){
+void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int p, int l, int *qtd_registros){
 	int chave = hash(emp->cod, tam, l);
 	int excl, aux;
 	rewind(exclusao);
@@ -73,6 +76,10 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 			*qtd_registros += 1;
 		}
 	}
+    if((*qtd_registros)/tam >= fbMax){
+        printf("    --->    FB Max\n");
+        expandHash(h, r, tam, p, l);
+    }    
 }
 
 void expandHash(FILE *h, FILE *r, int tam, int p, int l){
@@ -148,10 +155,11 @@ void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 	}
 }
 
-int busca_por_cod(FILE *hash, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
+/*int busca_por_cod(FILE *hash, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
 	int end_atual;
 	int chave = hash(cod, tam, l);
 	Empregado* emp;
+    FILE* r = fopen("r.dat", "w+b");
 
 	fseek(hash, chave*sizeof(int), SEEK_SET);
 	fread(&end_atual, sizeof(int), 1, hash);
@@ -170,4 +178,44 @@ int busca_por_cod(FILE *hash, FILE* regts, int cod, int tam, int l){ //retorna o
 	}
 
 	return -1;
+}*/
+
+int main(){
+	int tamHash = 2, l = 0, qtd_registros = 0, p = 0, aux = -1;
+	FILE *hash = fopen("hash.dat","w+b");
+	FILE *regts = fopen("registros.dat","w+b");
+	FILE *excl = fopen("exclusao.dat","w+b");
+	Empregado *emp[3];
+
+	initHash(hash, tamHash);
+	fwrite(&aux, sizeof(int), 1, excl);
+    
+    emp[0] = criarEmpregado("x", 18, 100);
+    emp[1] = criarEmpregado("y", 17, 100);
+    emp[2] = criarEmpregado("z", 16, 100);
+    imprime_empreg(emp[0]);
+    imprime_empreg(emp[1]);
+    imprime_empreg(emp[2]);
+    
+    printf("\n HASH: \n");
+    imprimeHash(hash);
+    
+	inserirHash(hash, regts, excl, emp[0], tamHash, p, l, &qtd_registros);
+	inserirHash(hash, regts, excl, emp[1], tamHash, p, l, &qtd_registros);
+	inserirHash(hash, regts, excl, emp[2], tamHash, p, l, &qtd_registros);
+	/*inserirHash(hash, regts, excl, emp[5], tamHash, l, &qtd_registros);*/
+    printf(" Nova Hash: \n");
+	imprimeHash(hash);
+
+	//expandHash(hash, regts, tamHash, p, l);
+
+	rewind(regts);
+	/*for (int i = 0; i < 4; ++i){
+		Empregado *aux;
+		aux = le_empreg(regts);
+		imprime_empreg(aux);
+	}*/
+	//imprimeHash(hash);
+
+	return 0;
 }
