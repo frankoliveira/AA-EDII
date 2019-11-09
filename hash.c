@@ -3,7 +3,7 @@
 #include <math.h>
 #include "dependente.c"
 #include "empregado.c"
-#define fbMax 1,1
+#define fbMax 1.1
 
 void expandHash(FILE *h, FILE *r, int tam, int p, int l);
 
@@ -76,7 +76,8 @@ void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int 
 			*qtd_registros += 1;
 		}
 	}
-    if((*qtd_registros)/tam >= fbMax){
+    if((*qtd_registros)/(float)tam >= fbMax){
+        printf("qtd_reg / tam = %d / %d = %f\n", *qtd_registros, tam, *qtd_registros/(float)tam);
         printf("    --->    FB Max\n");
         expandHash(h, r, tam, p, l);
     }    
