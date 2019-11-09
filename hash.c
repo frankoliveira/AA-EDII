@@ -171,7 +171,7 @@ int busca_por_cod(FILE *h, FILE* regts, int cod, int tam, int l){ //retorna o en
 		while(emp->prox != -1){
 			fseek(regts, emp->prox*tamanhoEmpregado(), SEEK_SET);
 			end_atual = emp->prox;
-			emp = le_empreg(r);
+			emp = le_empreg(regts);
 			if(emp->cod == cod)
 				return end_atual;
 		}
