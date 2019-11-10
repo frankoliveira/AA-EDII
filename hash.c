@@ -35,11 +35,12 @@ void percorrendo_lista(FILE* h, FILE* reg, int r_hash){
     fseek(reg, aux*tamanhoEmpregado(), SEEK_SET);
     e = le_empreg(reg);
     if(e->status != -1)   imprime_empreg(e);
-    while(e->prox != -1){ //Vai até o final da lista encadeada
+    while(e->prox != -1){
         fseek(reg, e->prox*tamanhoEmpregado(), SEEK_SET);
         e = le_empreg(reg);
         if(e->status != -1)    imprime_empreg(e);
-    }  
+    } 
+    free(e);
 }
 
 void inserirHash(FILE *h, FILE *r, FILE *exclusao, Empregado *emp, int tam, int p, int l, int *qtd_registros){
@@ -172,11 +173,66 @@ void expandHash(FILE *h, FILE *r, int tam, int p, int l){
 	}
 }
 
-/*int busca_por_cod(FILE *hash, FILE* regts, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
+int excluirHash(FILE *h, FILE *r, FILE *exclusao, int emp, int tam, int l, int *qtd_registros){
+    int cod = 0, end_atual = emp, chave = 0, menos_um = -1;
+    Empregado* e = (Empregado*) malloc(tamanhoEmpregado());
+    Empregado* prox = (Empregado*) malloc(tamanhoEmpregado());
+
+    fseek(r, emp*tamanhoEmpregado(), SEEK_SET);    // indo até registro em arq de reg
+    if(fread(&cod, sizeof(int), 1, r) > 0){    //Conseguimos ler
+        printf("    IF    IF    IF\n");
+        for(int i=0; i<l; i++){    //rodando p/ cd l possível no momento em que o emp foi inserido
+            
+            // NÃO ENTRA AQUI        NÃO ENTRA AQUI        NÃO ENTRA AQUI
+            printf("    FOR L    FOR L\n");
+            chave = hash(cod, tam, i+1);
+            e = le_empreg(r);
+            if(e->cod == cod){    //reg = 1º reg
+                fseek(h, chave*sizeof(int), SEEK_SET);
+                e->status = -1;
+                salva_empreg(e, exclusao);
+                if(e->prox != -1){    // tem proximo
+                    fwrite(&e->prox, sizeof(int), 1, h);                    
+                }
+                else{
+                    fwrite(&menos_um, sizeof(int), 1, h);
+                }
+                fseek(r, emp*tamanhoEmpregado(), SEEK_SET);
+                salva_empreg(e, r);    // p/ salvar empreg com status -1
+                return 1;
+            }
+            else{
+                while(e->prox != -1){ //Vai até o final da lista encadeada
+                    fseek(r, e->prox*tamanhoEmpregado(), SEEK_SET);
+                    prox = le_empreg(r);    //lendo proximo
+                    if(prox->cod == cod){    //achamos reg
+                        e->prox = prox->prox;
+                        prox->status = -1;
+                        salva_empreg(prox, exclusao);
+                        fseek(r, -tamanhoEmpregado(), SEEK_CUR);    //voltando um reg
+                        salva_empreg(prox, r);
+                        return 1;
+                    }
+                    else
+                        e = prox;
+                    // Não achamos nessa rodada do l
+                }
+            }
+        }
+        return 0;
+    }
+    else{
+        printf("Arq r deu ruim\n");
+    }
+    free(e);
+    free(prox);
+    return 0;
+}
+
+/*int busca_por_cod(FILE *hash, FILE* r, int cod, int tam, int l){ //retorna o endereço do arquivo de registros
 	int end_atual;
 	int chave = hash(cod, tam, l);
 	Empregado* emp;
-    FILE* r = fopen("r.dat", "w+b");
 
 	fseek(hash, chave*sizeof(int), SEEK_SET);
 	fread(&end_atual, sizeof(int), 1, hash);
@@ -226,6 +282,9 @@ int main(){
 
 	percorrendo_lista(hash, regts, 1);
 
-
+    printf("Excluindo reg na pos 1 (cod = 2) : %d\n", excluirHash(hash, regts, excl, 1, tamHash, l,&qtd_registros));
+    
+    //imprimeHash(hash);
+    
 	return 0;
 }
